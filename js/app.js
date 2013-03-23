@@ -3,61 +3,63 @@ window.App = Ember.Application.create();
 // Router
 //
 App.Router.map(function() {
-  this.resource('songs', function() {
-    this.route('edit', { path: "/:name/edit" });
-    this.route('new');
+  this.resource("parts", function() {
+    this.route("new");
+    this.resource('part', { path: ':part_id' });
   });
 });
 
 App.IndexRoute = Ember.Route.extend({
   redirect: function() {
-    this.transitionTo('songs.new');
+    this.transitionTo('parts.new');
   }
 });
 
-App.SongsEditRoute = Ember.Route.extend({
-  setupController: function(controller, name) {
-    var song = this.controllerFor('sidebar').get('content').find(function(item) {
-      return item.get("name") === name;
-    });
-    this.controller.set('content', song);
-  }
-});
-
-App.SongsNewRoute = Ember.Route.extend({
+App.PartsRoute = Ember.Route.extend({
   model: function() {
-    return App.Song.create({name: "", body: ""});
-  },
-  setupController: function() {
-    this.controller.set("content", App.Song.create({name: "", body: ""}));
+    return [
+      App.Part.create({name: "Verse 1", body: "lorem" })
+    ];
+  }
+});
+
+App.PartsNewRoute = Ember.Route.extend({
+  model: function() {
+    return App.Part.create()
+  }
+});
+
+App.PartRoute = Ember.Route.extend({
+  model: function(params) {
+    var part = this.controllerFor('parts').get('content').find(function(part) {
+      return part.get("name") === params.part_id;
+    });
+
+    if (!part) {
+      this.transitionTo("parts.new");
+    }
+
+    return part;
   }
 });
 
 //Models
 //
-App.Song = Ember.Object.extend({
+App.Part = Ember.Object.extend({
+  id: function() {
+    return this.get("name");
+  }.property("name")
 });
 
 //Controllers
 //
-App.SidebarController = Ember.ArrayController.extend({
-});
+App.PartsNewController = Ember.ObjectController.extend({
+  needs: ["parts"],
 
-App.SongsController = Ember.Controller.extend({
-});
-
-App.SongsEditController = Ember.ObjectController.extend({
-  needs: ["songs"],
-
-  save: function() {
-  }
-});
-
-App.SongsNewController = Ember.ObjectController.extend({
-  needs: ["songs", "sidebar"],
-
-  save: function() {
-    this.get("controllers.sidebar").pushObject(this.get("content"));
+  create: function() {
+    var part = this.get("content");
+    this.get("controllers.parts").pushObject(part);
+    this.transitionToRoute("part", part);
   }
 });
 
