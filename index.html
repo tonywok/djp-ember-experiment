@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Experiment</title>
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/foundation.css" />
+
+  <script src="js/vendor/custom.modernizr.js"></script>
+</head>
+<body>
+
+  <ul id="song-actions" class="f-dropdown" data-dropdown-content>
+    <li><a href="#">Move Up</a></li>
+    <li><a href="#">Move Down</a></li>
+    <li><a href="#">Lock</a></li>
+    <li><a href="#">Delete</a></li>
+  </ul>
+
+  <script type="text/x-handlebars" data-template-name="application">
+    <div class='row'>
+      <div class='large-12 columns'>
+        <h1>Testing</h1>
+      </div>
+      <hr>
+    </div>
+    {{ outlet }}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="songs">
+    {{ outlet }}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="songs/index">
+    {{#linkTo "songs.new"}}Create Song{{/linkTo}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="sidebar">
+    <div class='large-3 columns'>
+      {{#if controller.content }}
+        <ul class='side-nav'>
+          {{#each song in controller}}
+            <li>
+              {{#linkTo "songs.edit" song.name class="button secondary split"}}{{song.name}}<span data-dropdown='song-actions'></span>{{/linkTo}}
+            </li>
+          {{/each}}
+        </ul>
+        {{#linkTo "songs.new" class="large-12 button success"}}Add New Song{{/linkTo}}
+      {{else}}
+        <h6 class='subheader'>Create the parts of the song you'd like your students to start working on.</h6>
+      {{/if}}
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="_songform">
+    {{render "sidebar"}}
+    <div class='large-9 columns'>
+      {{view Ember.TextField placeholder="Part of a song" valueBinding="content.name"}}
+      {{view Ember.TextArea placeholder="Contents of part" valueBinding="content.body"}}
+      <ul class="button-group right">
+        <li><a {{action "save"}} class="small button secondary">Save</a></li>
+      </ul>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="songs/new">
+    <div class='row'>
+      {{partial "songform"}}
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="songs/edit">
+    <div class='row'>
+      {{partial "songform"}}
+    </div>
+  </script>
+
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/vendor/foundation.js"></script>
+  <script src="js/vendor/handlebars.js"></script>
+  <script src="js/vendor/ember.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+  <script src="js/app.js"></script>
+</body>
+</html>
