@@ -6,9 +6,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
   <title>Experiment</title>
-  <link rel="stylesheet" href="css/normalize.css" />
-  <link rel="stylesheet" href="css/foundation.css" />
-  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="./css/normalize.css" />
+  <link rel="stylesheet" href="./css/foundation.css" />
+  <link rel="stylesheet" href="./css/app.css" />
 
   <script src="js/vendor/custom.modernizr.js"></script>
 </head>
@@ -17,7 +17,7 @@
   <script type="text/x-handlebars" data-template-name="application">
     <div class='row'>
       <div class='large-12 columns'>
-        <h1>Testing</h1>
+        <h1>Hitsville</h1>
       </div>
       <hr>
     </div>
@@ -29,9 +29,9 @@
   <script type="text/x-handlebars" data-template-name="parts">
     <div class='large-3 columns'>
       {{#if controller.content }}
-        <div class="section-container" data-section="accordion">
+        <div class="section-container accordion" data-section="accordion">
           {{#each part in controller}}
-            <section class="section">
+            <section class="section"}}>
               <p class="title">
                 {{#linkTo "part" part}}{{part.name}}{{/linkTo}}
               </p>
@@ -43,21 +43,29 @@
             </section>
           {{/each}}
         </div>
-        {{#linkTo "parts.new" class="large-12 button success"}}Add New Song{{/linkTo}}
+        {{#linkTo "parts.new" class="large-12 button success"}}Add New Part{{/linkTo}}
       {{else}}
         <h6 class='subheader'>Create the parts of the song you'd like your students to start working on.</h6>
       {{/if}}
     </div>
     <div class="large-9 columns">
-      {{ outlet }}
+      {{ outlet "parts" }}
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="parts/index">
-    <h6 class="subheader">Add or select an existing part for students to begin working on.</h6>
+  <script type="text/x-handlebars" data-template-name="version">
+    <div class="row">
+      I'm a version and shit
+    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="part">
+    {{#each version in content.versions}}
+      {{#linkTo "version" version}}
+        <img src="/images/avatar.png" style="width: 50px;"/>
+      {{/linkTo}}
+    {{/each}}
+
     {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
     {{view Ember.TextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
     <ul class="button-group right">
@@ -73,10 +81,10 @@
     </ul>
   </script>
 
-  <script src="js/vendor/jquery.js"></script>
-  <script src="js/vendor/foundation.js"></script>
-  <script src="js/vendor/handlebars.js"></script>
-  <script src="js/vendor/ember.js"></script>
+  <script src="./js/vendor/jquery.js"></script>
+  <script src="./js/vendor/foundation.js"></script>
+  <script src="./js/vendor/handlebars.js"></script>
+  <script src="./js/vendor/ember.js"></script>
   <script>
     $(document).foundation();
   </script>
