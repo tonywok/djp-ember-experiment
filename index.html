@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="./css/normalize.css" />
   <link rel="stylesheet" href="./css/foundation.css" />
   <link rel="stylesheet" href="./css/app.css" />
-
   <script src="js/vendor/custom.modernizr.js"></script>
 </head>
 <body>
@@ -18,67 +17,105 @@
     <div class='row'>
       <div class='large-12 columns'>
         <h1>Hitsville</h1>
+        <hr>
       </div>
-      <hr>
     </div>
-    <div class='row'>
-      {{ outlet }}
-    </div>
+    {{ outlet }}
   </script>
 
   <script type="text/x-handlebars" data-template-name="parts">
-    <div class='large-3 columns'>
-      {{#if controller.content }}
-        <div class="section-container accordion" data-section="accordion">
-          {{#each part in controller}}
-            <section class="section"}}>
-              <p class="title">
-                {{#linkTo "part" part}}{{part.name}}{{/linkTo}}
-              </p>
-              <div class="content">
-                <ul class='side-nav'>
-                  <li><a href="#" {{action "lock" part}}>Lock Part</a></li>
-                </ul>
-              </div>
-            </section>
-          {{/each}}
-        </div>
-        {{#linkTo "parts.new" class="large-12 button success"}}Add New Part{{/linkTo}}
-      {{else}}
-        <h6 class='subheader'>Create the parts of the song you'd like your students to start working on.</h6>
-      {{/if}}
-    </div>
-    <div class="large-9 columns">
-      {{ outlet "parts" }}
+    <div class='row'>
+      <div class='large-3 columns'>
+        {{#if controller.content }}
+          <div class="section-container accordion" data-section="accordion">
+            {{#each part in controller}}
+              <section class="section"}}>
+                <p class="title">
+                  {{#linkTo "part" part}}{{part.name}}{{/linkTo}}
+                </p>
+              </section>
+            {{/each}}
+          </div>
+          {{#linkTo "parts.new" class="large-12 button success"}}Add New Part{{/linkTo}}
+        {{else}}
+          <h6 class='subheader'>Create the parts of the song you'd like your students to start working on.</h6>
+        {{/if}}
+      </div>
+      <div class="large-9 columns">
+        {{ outlet "parts" }}
+      </div>
     </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="version">
     <div class="row">
-      I'm a version and shit
+      <div class="large-12 columns">
+        <h5>{{content.part.name}}</h5>
+        {{view App.DjpTextArea placeholder="Revise to your heart's content" valueBinding="content.body" rows="15"}}
+        <ul class="button-group right">
+          <li><a {{action "revise"}} {{bindAttr class=":button isSaved:disabled"}}> {{ controller.saveState }} </a></li>
+        </ul>
+      </div>
     </div>
+    {{render "comments.index" content.comments}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="part">
-    {{#each version in content.versions}}
-      {{#linkTo "version" version}}
-        <img src="/images/avatar.png" style="width: 50px;"/>
-      {{/linkTo}}
-    {{/each}}
+    <div class="row">
+      <div class="large-12 columns">
+        {{#each version in content.versions}}
+          {{#linkTo "version" version}}
+            <img src="/images/avatar.png" style="width: 50px;"/>
+          {{/linkTo}}
+        {{/each}}
+      </div>
+    </div>
 
-    {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
-    {{view Ember.TextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
-    <ul class="button-group right">
-      <li><a {{action "update"}} class="small button secondary">Save</a></li>
-    </ul>
+    <div class="row">
+      <div class="large-12 columns">
+        {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
+        {{view App.DjpTextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
+        <ul class="button-group right">
+          <li><a {{action "update"}} {{bindAttr class=":button isSaved:secondary"}}> Save </a></li>
+        </ul>
+      </div>
+    </div>
+    {{render "comments.index" content.comments}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="parts/new">
-    {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
-    {{view Ember.TextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
-    <ul class="button-group right">
-      <li><a {{action "create"}} class="small button secondary">Save</a></li>
-    </ul>
+    <div class="row">
+      <div class="large-12 columns">
+        {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
+        {{view Ember.TextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
+        <ul class="button-group right">
+          <li><a {{action "create"}} class="small button secondary">Save</a></li>
+        </ul>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="comments/index">
+    <div class="row">
+      <div class="large-12 columns">
+        {{#each comment in content}}
+          <div class="row">
+            <div class="large-12 columns">
+              <p>{{comment.body}}</p>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+    {{render "comments.new"}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="comments/new">
+    <div class="row">
+      <div class="large-12 columns">
+        {{view Ember.TextArea placeholder="Share your thoughts" valueBinding="content.body" rows="3"}}
+      </div>
+    </div>
   </script>
 
   <script src="./js/vendor/jquery.js"></script>
