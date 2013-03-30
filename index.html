@@ -9,6 +9,35 @@
   <link rel="stylesheet" href="./css/normalize.css" />
   <link rel="stylesheet" href="./css/foundation.css" />
   <link rel="stylesheet" href="./css/app.css" />
+  <style>
+    i {
+      position: absolute;
+      background-image: url(/images/add_comment.png);
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      height: 26px;
+      width: 26px;
+      margin: -5px 0 0 99%;
+      left: 0;
+      display: inline-block;
+      opacity: 0;
+      cursor: pointer;
+    }
+    i a { text-decoration: none; }
+
+    tr { background-color: #ffffff !important; }
+    tr:hover { background-color: #ffffcc !important;}
+    tr:hover i { opacity: 1; }
+
+    tr td.line-link { background-color: #f1f1f1; }
+    tr td.line-link a { color: #e5e5e5; text-decoration: none; }
+    tr td.line-link a:hover { color: #c9c9c9; }
+
+  </style>
+  <script>
+    window.ENV = window.ENV || {};
+    window.ENV["EXPERIMENTAL_CONTROL_HELPER"] = true;
+  </script>
   <script src="js/vendor/custom.modernizr.js"></script>
 </head>
 <body>
@@ -47,19 +76,6 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="version">
-    <div class="row">
-      <div class="large-12 columns">
-        <h5>{{content.part.name}}</h5>
-        {{view App.DjpTextArea placeholder="Revise to your heart's content" valueBinding="content.body" rows="15"}}
-        <ul class="button-group right">
-          <li><a {{action "revise"}} {{bindAttr class=":button isSaved:disabled"}}> {{ controller.saveState }} </a></li>
-        </ul>
-      </div>
-    </div>
-    {{render "comments.index" content.comments}}
-  </script>
-
   <script type="text/x-handlebars" data-template-name="part">
     <div class="row">
       <div class="large-12 columns">
@@ -70,7 +86,6 @@
         {{/each}}
       </div>
     </div>
-
     <div class="row">
       <div class="large-12 columns">
         {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
@@ -80,7 +95,7 @@
         </ul>
       </div>
     </div>
-    {{render "comments.index" content.comments}}
+    {{render "part_comments.index" content.comments}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="parts/new">
@@ -95,7 +110,7 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="comments/index">
+  <script type="text/x-handlebars" data-template-name="part_comments/index">
     <div class="row">
       <div class="large-12 columns">
         {{#each comment in content}}
@@ -107,13 +122,93 @@
         {{/each}}
       </div>
     </div>
-    {{render "comments.new"}}
+    {{render "part_comments.new"}}
   </script>
 
-  <script type="text/x-handlebars" data-template-name="comments/new">
+  <script type="text/x-handlebars" data-template-name="line">
+    <tr>
+      <td class='line-link' width="0px">
+        <a href='#something'>#</a>
+      </td>
+      <td width="100%">
+        <i {{action "toggleNewNote" view}}></i>
+        {{line.body}}
+      </td>
+    </tr>
+
+    {{#if showingNotes}}
+      <tr>
+        <td colspan="2">
+
+          {{#each note in line.foos itemController="note"}}
+            {{#view App.NoteView}}
+              <h6>{{body}}</h6>
+            {{/view}}
+          {{/each}}
+
+          {{#unless showingNewNote}}
+            <button {{action "toggleNewNote"}} class="secondary tiny">Add Note</button>
+          {{/unless}}
+
+          {{#if showingNewNote}}
+            {{view Ember.TextField action="createNote"}}
+            <button {{action "toggleNewNote"}} class="secondary tiny"> Cancel</button>
+          {{/if}}
+
+        </td>
+      </tr>
+    {{/if}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="lines">
+    {{#each line in controller itemController="line"}}
+      {{control "line" line}}
+    {{/each}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="version">
+    <div class='row'>
+      <div class='large-12 columns'>
+        <h5>{{content.part.name}}</h5>
+        <table>
+          <tbody>
+            {{render "lines" content.lines}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{render "version_comments.index" content.comments}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="version_comments/index">
+    <div class="row">
+      <div class="large-12 columns">
+        {{#each comment in content}}
+          <div class="row">
+            <div class="large-12 columns">
+              <p>{{comment.body}}</p>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+    {{render "version_comments.new"}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="version_comments/new">
     <div class="row">
       <div class="large-12 columns">
         {{view Ember.TextArea placeholder="Share your thoughts" valueBinding="content.body" rows="3"}}
+        <a href="#new-comment" class="button right small" {{action "post" content}}> Post </a>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="part_comments/new">
+    <div class="row">
+      <div class="large-12 columns">
+        {{view Ember.TextArea placeholder="Share your thoughts" valueBinding="content.body" rows="3"}}
+        <a href="#new-comment" class="button right small" {{action "post" content}}> Post </a>
       </div>
     </div>
   </script>
