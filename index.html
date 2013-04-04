@@ -16,28 +16,67 @@
       background-repeat: no-repeat;
       background-position: 50% 50%;
       height: 26px;
-      width: 26px;
-      margin: -5px 0 0 99%;
-      left: 0;
-      display: inline-block;
-      opacity: 0;
+      width: 16px;
+      right: 20px;
       cursor: pointer;
+      opacity: 0;
     }
     i a { text-decoration: none; }
 
-    tr { background-color: #ffffff !important; }
-    tr:hover { background-color: #ffffcc !important;}
-    tr:hover i { opacity: 1; }
+    .line {
+      line-height: 1.6em;
+      padding-right: 26px;
+    }
+    .line:hover, .line:active {
+      background-color: #ffffcc;
+    }
+    .line:hover i {
+      opacity: 1;
+    }
 
-    tr td.line-link { background-color: #f1f1f1; }
-    tr td.line-link a { color: #e5e5e5; text-decoration: none; }
-    tr td.line-link a:hover { color: #c9c9c9; }
+    .comments {
+      padding: 10px 0 10px 10px;
+    }
+    .new-comment {
+      margin: 20px 0 0 0;
+    }
+    .comment {
+      border: 1px solid #c5c5c5;
+      margin: 5px 0 5px 0;
+    }
+    .comment .info {
+      line-height: 1em;
+      padding: 5px;
+      background-color: #e5e5e5;
+    }
+    .comment .info img {
+      width: 20px;
+      vertical-align: middle
+    }
+    .comment .info a {
+      font-size: .75em;
+      font-weight: bold;
+      color: #444;
+    }
+    .comment .info a:hover {
+      text-decoration: underline;
+    }
+    .comment .info ul {
+      float: right;
+      list-style-type: none;
+      margin: 0;
+      line-height: 1em;
+    }
+    .comment .info ul li {
+      display: inline;
+    }
+    .comment .body {
+      padding: 10px 5px;
+      font-size: .9em;
+      line-height: 1.1em;
+    }
 
   </style>
-  <script>
-    window.ENV = window.ENV || {};
-    window.ENV["EXPERIMENTAL_CONTROL_HELPER"] = true;
-  </script>
   <script src="js/vendor/custom.modernizr.js"></script>
 </head>
 <body>
@@ -55,8 +94,10 @@
   <script type="text/x-handlebars" data-template-name="parts">
     <div class='row'>
       <div class='large-3 columns'>
+
         {{#if controller.content }}
-          <div class="section-container accordion" data-section="accordion">
+
+          <div class="section-container accordion">
             {{#each part in controller}}
               <section class="section"}}>
                 <p class="title">
@@ -66,13 +107,21 @@
             {{/each}}
           </div>
           {{#linkTo "parts.new" class="large-12 button success"}}Add New Part{{/linkTo}}
+
         {{else}}
-          <h6 class='subheader'>Create the parts of the song you'd like your students to start working on.</h6>
+
+          <h6 class='subheader'>
+            Create the parts of the song you'd like your students to start working on.
+          </h6>
+
         {{/if}}
+
       </div>
+
       <div class="large-9 columns">
         {{ outlet "parts" }}
       </div>
+
     </div>
   </script>
 
@@ -125,92 +174,93 @@
     {{render "part_comments.new"}}
   </script>
 
-  <script type="text/x-handlebars" data-template-name="line">
-    <tr>
-      <td class='line-link' width="0px">
-        <a href='#something'>#</a>
-      </td>
-      <td width="100%">
-        <i {{action "toggleNewNote" view}}></i>
-        {{line.body}}
-      </td>
-    </tr>
-
-    {{#if showingNotes}}
-      <tr>
-        <td colspan="2">
-
-          {{#each note in line.foos itemController="note"}}
-            {{#view App.NoteView}}
-              <h6>{{body}}</h6>
-            {{/view}}
-          {{/each}}
-
-          {{#unless showingNewNote}}
-            <button {{action "toggleNewNote"}} class="secondary tiny">Add Note</button>
-          {{/unless}}
-
-          {{#if showingNewNote}}
-            {{view Ember.TextField action="createNote"}}
-            <button {{action "toggleNewNote"}} class="secondary tiny"> Cancel</button>
-          {{/if}}
-
-        </td>
-      </tr>
-    {{/if}}
+  <script type="text/x-handlebars" data-template-name="note">
+    <div class='info'>
+      <img src="/images/avatar.png"></img>
+      <a href="#">Tony Schneider</a>
+      <ul>
+        <li><a href="#">edit</a></li>
+        <li><a href="#">delete</a></li>
+      </ul>
+    </div>
+    <div class='body'>
+      {{body}}
+    </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="lines">
-    {{#each line in controller itemController="line"}}
-      {{control "line" line}}
-    {{/each}}
+  <script type="text/x-handlebars" data-template-name="line">
+    <div class='line'>
+      <i {{action "toggleNewNote" view}}></i>
+      {{line.body}}
+    </div>
+
+    {{#if showingNotes}}
+      <div class='comments'>
+        {{#each note in line.foos}}
+          {{render "note" note}}
+        {{/each}}
+
+        {{#if showingNewNote}}
+          <form class='new-comment'>
+            {{view App.DjpTextArea valueBinding="note" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
+            <button {{action "toggleNewNote"}} class="secondary small"> Cancel</button>
+            <button {{action "createNote" view.note}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
+          </form>
+        {{else}}
+          <button {{action "toggleNewNote"}} class="secondary small"> Add line note </button>
+        {{/if}}
+      </div>
+    {{/if}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="version">
     <div class='row'>
-      <div class='large-12 columns'>
+      <article class='large-12 columns'>
         <h5>{{content.part.name}}</h5>
-        <table>
-          <tbody>
-            {{render "lines" content.lines}}
-          </tbody>
-        </table>
-      </div>
+        {{#each line in lines}}
+          {{render "line" line}}
+        {{/each}}
+      </article>
     </div>
     {{render "version_comments.index" content.comments}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="version_comments/index">
     <div class="row">
-      <div class="large-12 columns">
+      <div class="comments large-12 columns">
+        <h6 class='secondary'>{{content.length}} Comments</h6>
         {{#each comment in content}}
-          <div class="row">
-            <div class="large-12 columns">
-              <p>{{comment.body}}</p>
+          <div class="comment">
+            <div class='info'>
+              <img src="/images/avatar.png"></img>
+              <a href="#">Tony Schneider</a>
+              <ul>
+                <li><a href="#">edit</a></li>
+                <li><a href="#">delete</a></li>
+              </ul>
+            </div>
+            <div class='body'>
+              {{comment.body}}
             </div>
           </div>
         {{/each}}
+        {{render "version_comments.new"}}
       </div>
     </div>
-    {{render "version_comments.new"}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="version_comments/new">
-    <div class="row">
-      <div class="large-12 columns">
-        {{view Ember.TextArea placeholder="Share your thoughts" valueBinding="content.body" rows="3"}}
-        <a href="#new-comment" class="button right small" {{action "post" content}}> Post </a>
-      </div>
-    </div>
+    <form class='new-comment'>
+      {{view App.DjpTextArea valueBinding="content.body" rowsBindings="rows" placeholder="Share your thoughts"}}
+      <button {{action "post" content}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
+    </form>
   </script>
 
   <script type="text/x-handlebars" data-template-name="part_comments/new">
-    <div class="row">
-      <div class="large-12 columns">
-        {{view Ember.TextArea placeholder="Share your thoughts" valueBinding="content.body" rows="3"}}
-        <a href="#new-comment" class="button right small" {{action "post" content}}> Post </a>
-      </div>
-    </div>
+    <form class='new-comment'>
+      {{view App.DjpTextArea valueBinding="content.body" rowsBindings="rows" placeholder="Share your thoughts"}}
+      <button {{action "post" content}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
+    </form>
   </script>
 
   <script src="./js/vendor/jquery.js"></script>

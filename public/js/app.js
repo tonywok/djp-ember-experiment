@@ -113,6 +113,7 @@ App.VersionController = Ember.ObjectController.extend({
 });
 
 App.PartCommentsNewController = Ember.ObjectController.extend({
+  isSaved: true,
   needs: ["part"],
   post: function(comment) {
     var partController = this.get("controllers.part");
@@ -123,6 +124,7 @@ App.PartCommentsNewController = Ember.ObjectController.extend({
 });
 
 App.VersionCommentsNewController = Ember.ObjectController.extend({
+  isSaved: true,
   needs: ["version"],
   post: function(comment) {
     var versionController = this.get("controllers.version");
@@ -134,6 +136,8 @@ App.VersionCommentsNewController = Ember.ObjectController.extend({
 
 App.LineController = Ember.ObjectController.extend({
   showingNewNote: false,
+  isSaved: true,
+  note: "",
 
   showingNotes: function() {
    return this.get("showingNewNote") || this.get("foos").length;
@@ -143,32 +147,46 @@ App.LineController = Ember.ObjectController.extend({
     this.set("showingNewNote", !this.get("showingNewNote"));
   },
 
-  createNote: function(note){
+  createNote: function(){
     this.get("content.foos").pushObject(App.Comment.create({
-      body: note
-    }))
+      body: this.get("note")
+    }));
+    this.set("note", "");
   }
-});
-
-App.NoteController = Ember.ObjectController.extend({
 });
 
 //Views
 //
 App.DjpTextArea = Ember.TextArea.extend({
+  rows: 1,
   didInsertElement: function() {
     this.set("original_content", this.get("value"));
   },
+
   change: function() {
-    if (this.get('original_content') === this.get('value')) {
+    var isEmpty = this.get('value') === "";
+    var noChange = this.get('original_content') === this.get('value');
+    if (isEmpty || noChange) {
       this.set("controller.isSaved", true);
     } else {
       this.set("controller.isSaved", false);
     }
-  }.observes("value")
+  }.observes("value"),
+
+  keyDown: function(key) {
+    if (key.which === 13) {
+      this.set("rows", this.get("rows") + 1);
+    } else if (key.which === 8) {
+      var rows = this.get("rows");
+      if (rows >= 1) {
+        this.set("rows", rows - 1);
+      }
+    }
+  }
 });
 
 App.NoteView = Ember.View.extend({
+  classNames: "comment"
 });
 
 //Models
