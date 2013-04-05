@@ -1,3 +1,6 @@
+textarea {
+  height: 100%;
+}
 i {
   position: absolute;
   background-image: url(/images/add_comment.png);
@@ -13,10 +16,12 @@ i a { text-decoration: none; }
 
 .line {
   line-height: 1.6em;
-  padding-right: 26px;
+  padding: 0 26px 0 10px;
+  border: 1px solid white;
 }
 .line:hover, .line:active {
   background-color: #ffffcc;
+  border: 1px solid gold;
 }
 .line:hover i {
   opacity: 1;

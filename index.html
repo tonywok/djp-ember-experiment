@@ -28,7 +28,6 @@
       <div class='large-3 columns'>
 
         {{#if controller.content }}
-
           <div class="section-container accordion">
             {{#each part in controller}}
               <section class="section"}}>
@@ -39,21 +38,16 @@
             {{/each}}
           </div>
           {{#linkTo "parts.new" class="large-12 button success"}}Add New Part{{/linkTo}}
-
         {{else}}
-
           <h6 class='subheader'>
             Create the parts of the song you'd like your students to start working on.
           </h6>
-
         {{/if}}
 
       </div>
-
       <div class="large-9 columns">
         {{ outlet "parts" }}
       </div>
-
     </div>
   </script>
 
@@ -69,14 +63,15 @@
     </div>
     <div class="row">
       <div class="large-12 columns">
-        {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="content.name"}}
-        {{view App.DjpTextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="content.body" rows="15"}}
+        {{view Ember.TextField placeholder="Name the part (e.g Verse 1, Chorus, etc)" valueBinding="name"}}
+        {{view App.DjpTextArea placeholder="Add some starter content for students to edit or leave blank" valueBinding="body" rows="15"}}
         <ul class="button-group right">
           <li><a {{action "update"}} {{bindAttr class=":button isSaved:secondary"}}> Save </a></li>
         </ul>
       </div>
     </div>
-    {{render "part_comments.index" content.comments}}
+    {{partial "comments"}}
+    {{partial "newComment"}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="parts/new">
@@ -103,7 +98,6 @@
         {{/each}}
       </div>
     </div>
-    {{render "part_comments.new"}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="note">
@@ -111,8 +105,8 @@
       <img src="/images/avatar.png"></img>
       <a href="#">Tony Schneider</a>
       <ul>
-        <li><a href="#">edit</a></li>
-        <li><a href="#">delete</a></li>
+        <li><a {{action "edit"}} href="#">edit</a></li>
+        <li><a {{action "delete"}}href="#">delete</a></li>
       </ul>
     </div>
     <div class='body'>
@@ -134,9 +128,9 @@
 
         {{#if newNote}}
           <form class='new-comment'>
-            {{view App.DjpTextArea valueBinding="newNote.body" placeholder="Share your thoughts on this line"}}
+            {{view App.DjpTextArea valueBinding="newNote.body" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
             <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
-            <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr disabled="disableNewNoteCreate"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
+            <input type='submit' value="Comment on this line"  class="right small success button" {{action "createNote"}} {{bindAttr disabled="disableNewNoteCreate"}} />
           </form>
         {{else}}
           <button {{action "toggleNewNote"}} class="secondary small"> Add line note </button>
@@ -147,59 +141,54 @@
 
   <script type="text/x-handlebars" data-template-name="version">
     <div class='row'>
-      <article class='large-12 columns'>
-        <h5>{{content.part.name}}</h5>
-        {{#each line in lines}}
-          {{render "line" line}}
-        {{/each}}
-      </article>
-    </div>
-    {{render "version_comments.index" content.comments}}
-  </script>
+      <div class='large-12 columns'>
+        <article>
+          <h5>{{content.part.name}}</h5>
+          {{#each line in lines}}
+            {{render "line" line}}
+          {{/each}}
+        </article>
 
-  <script type="text/x-handlebars" data-template-name="version_comments/index">
-    <div class="row">
-      <div class="comments large-12 columns">
-        <h6 class='secondary'>{{content.length}} Comments</h6>
-        {{#each comment in content}}
-          <div class="comment">
-            <div class='info'>
-              <img src="/images/avatar.png"></img>
-              <a href="#">Tony Schneider</a>
-              <ul>
-                <li><a href="#">edit</a></li>
-                <li><a href="#">delete</a></li>
-              </ul>
-            </div>
-            <div class='body'>
-              {{comment.body}}
-            </div>
-          </div>
-        {{/each}}
-        {{render "version_comments.new"}}
+        {{partial "comments"}}
+        {{partial "new_comment"}}
       </div>
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="new_comment">
-    <form class='new-comment'>
-      {{view App.DjpTextArea valueBinding="newNote.body" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
-      <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
-      <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
-    </form>
+  <script type="text/x-handlebars" data-template-name="comment">
+    <div class="comment">
+      <div class='info'>
+        <img src="/images/avatar.png"></img>
+        <a href="#">Tony Schneider</a>
+        <ul>
+          <li><a href="#">edit</a></li>
+          <li><a href="#">delete</a></li>
+        </ul>
+      </div>
+      <div class='body'>
+        {{comment.body}}
+      </div>
+    </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="version_comments/new">
-    <form class='new-comment'>
-      {{view App.DjpTextArea valueBinding="content.body" rowsBindings="rows" placeholder="Share your thoughts"}}
-      <button {{action "post" content}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
-    </form>
+  <script type="text/x-handlebars" data-template-name="_comments">
+    <br />
+    <br />
+    <br />
+    <div class="row">
+      <div class="comments large-12 columns">
+        <h6 class='secondary'>{{content.comments.length}} Comments</h6>
+        {{#each comment in content.comments}}
+          {{render "comment" comment}}
+        {{/each}}
+      </div>
+    </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="part_comments/new">
+  <script type="text/x-handlebars" data-template-name="_new_comment">
     <form class='new-comment'>
-      {{view App.DjpTextArea valueBinding="content.body" rowsBindings="rows" placeholder="Share your thoughts"}}
-      <button {{action "post" content}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
+      {{view App.DjpTextArea valueBinding="controller.newComment.body" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
+      <input type='submit' value="Share comment" class="right small success button" {{action "createComment"}} {{bindAttr disabled="disableNewCommentCreate"}}/>
     </form>
   </script>
 

@@ -25,11 +25,6 @@ App.IndexRoute = Ember.Route.extend({
 App.PartsRoute = Ember.Route.extend({
   model: function() {
     return [App.Part.create({name: "Verse 1", body: "lorem" })];
-  },
-  setupController: function(controller) {
-    this.controllerFor("part_comments.new").set("content", App.Comment.create({
-      body: "",
-    }));
   }
 });
 
@@ -79,11 +74,6 @@ App.VersionRoute = Ember.Route.extend({
   },
   renderTemplate: function() {
     this.render("version", { outlet: "parts", into: "parts" });
-  },
-  setupController: function(controller) {
-    this.controllerFor("version_comments.new").set("content", App.Comment.create({
-      body: "",
-    }));
   }
 });
 
@@ -91,6 +81,9 @@ App.VersionRoute = Ember.Route.extend({
 //
 App.PartsNewController = Ember.ObjectController.extend({
   needs: ["parts"],
+  disableNewNoteCreate: function() {
+    return this.get("newNote.body") === "";
+  }.property("newComment.body"),
   create: function() {
     var part = this.get("content");
     this.get("controllers.parts").pushObject(part);
@@ -98,39 +91,29 @@ App.PartsNewController = Ember.ObjectController.extend({
   }
 });
 
-App.PartController = Ember.ObjectController.extend({
-  isSaved: true,
-});
-
 App.VersionController = Ember.ObjectController.extend({
-  isSaved: true,
-  revise: function() {
-    this.set('isSaved', true);
-  },
-  saveState: function() {
-    return ((this.get("isSaved")) ? "Saved" : "Save");
-  }.property("isSaved"),
-});
+  newComment: Ember.Object.create({body: ""}),
 
-App.PartCommentsNewController = Ember.ObjectController.extend({
-  isSaved: true,
-  needs: ["part"],
-  post: function(comment) {
-    var partController = this.get("controllers.part");
-    var part = partController.get("content");
-    part.get("comments").pushObject(comment);
-    this.set("content", App.Comment.create({ body: "" }));
+  disableNewCommentCreate: function() {
+    return this.get("newComment.body") === "";
+  }.property("newComment.body"),
+
+  createComment: function() {
+    this.get("comments").addObject(this.get("newComment"));
+    this.set("newComment", null);
   }
 });
 
-App.VersionCommentsNewController = Ember.ObjectController.extend({
-  isSaved: true,
-  needs: ["version"],
-  post: function(comment) {
-    var versionController = this.get("controllers.version");
-    var version = versionController.get("content");
-    version.get("comments").pushObject(comment);
-    this.set("content", App.Comment.create({ body: "" }));
+App.PartController = Ember.ObjectController.extend({
+  newComment: Ember.Object.create({body: ""}),
+
+  disableNewCommentCreate: function() {
+    return this.get("newComment.body") === "";
+  }.property("newComment.body"),
+
+  createComment: function() {
+    this.get("comments").addObject(this.get("newComment"));
+    this.set("newComment", null);
   }
 });
 
@@ -159,6 +142,15 @@ App.LineController = Ember.ObjectController.extend({
   }
 });
 
+App.NoteController = Ember.ObjectController.extend({
+  edit: function() {
+    alert("not implemented");
+  },
+  delete: function() {
+    alert("not implemented");
+  }
+});
+
 //Views
 //
 App.DjpTextArea = Ember.TextArea.extend({
@@ -170,7 +162,7 @@ App.DjpTextArea = Ember.TextArea.extend({
     }
   }.observes("value"),
 
-  keyDown: function(key) {
+  keyUp: function(key) {
     if (key.which === 13) {
       this.set("rows", this.get("rows") + 1);
     } else if (key.which === 8) {
@@ -179,7 +171,7 @@ App.DjpTextArea = Ember.TextArea.extend({
         this.set("rows", rows - 1);
       }
     }
-  }.observes("value")
+  }
 });
 
 App.NoteView = Ember.View.extend({
