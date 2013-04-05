@@ -1,3 +1,65 @@
-textarea {
-  height: 100%;
+i {
+  position: absolute;
+  background-image: url(/images/add_comment.png);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  height: 26px;
+  width: 16px;
+  right: 20px;
+  cursor: pointer;
+  opacity: 0;
+}
+i a { text-decoration: none; }
+
+.line {
+  line-height: 1.6em;
+  padding-right: 26px;
+}
+.line:hover, .line:active {
+  background-color: #ffffcc;
+}
+.line:hover i {
+  opacity: 1;
+}
+
+.comments {
+  padding: 10px 0 10px 10px;
+}
+.new-comment {
+  margin: 20px 0 0 0;
+}
+.comment {
+  border: 1px solid #c5c5c5;
+  margin: 5px 0 5px 0;
+}
+.comment .info {
+  line-height: 1em;
+  padding: 5px;
+  background-color: #e5e5e5;
+}
+.comment .info img {
+  width: 20px;
+  vertical-align: middle
+}
+.comment .info a {
+  font-size: .75em;
+  font-weight: bold;
+  color: #444;
+}
+.comment .info a:hover {
+  text-decoration: underline;
+}
+.comment .info ul {
+  float: right;
+  list-style-type: none;
+  margin: 0;
+  line-height: 1em;
+}
+.comment .info ul li {
+  display: inline;
+}
+.comment .body {
+  padding: 10px 5px;
+  font-size: .9em;
+  line-height: 1.1em;
 }

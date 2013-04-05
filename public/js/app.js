@@ -134,14 +134,12 @@ App.VersionCommentsNewController = Ember.ObjectController.extend({
   }
 });
 
-App.NewNoteView = Ember.View.extend({
-  isVisible: function() {
-    return this.get("controller.content") !== null;
-  }.observes("controller.content")
-});
-
 App.LineController = Ember.ObjectController.extend({
   newNote: null,
+
+  disableNewNoteCreate: function() {
+    return this.get("newNote.body") === "";
+  }.property("newNote.body"),
 
   showingNotes: function() {
     return this.get("newNote") || this.get("notes").length;
@@ -151,7 +149,7 @@ App.LineController = Ember.ObjectController.extend({
     if (this.get("newNote")) {
       this.set("newNote", null);
     } else {
-      this.set("newNote", Ember.Object.create({}));
+      this.set("newNote", Ember.Object.create({body: ""}));
     }
   },
 
@@ -166,22 +164,9 @@ App.LineController = Ember.ObjectController.extend({
 App.DjpTextArea = Ember.TextArea.extend({
   rows: 1,
 
-  didInsertElement: function() {
-    this.set("original_content", this.get("value"));
-  },
-
   reset: function() {
-    this.set("value", "");
-    this.set("rows", 1);
-  }.observes("controller.content"),
-
-  change: function() {
-    var isEmpty = this.get('value') === "";
-    var noChange = this.get('original_content') === this.get('value');
-    if (isEmpty || noChange) {
-      this.set("controller.isSaved", true);
-    } else {
-      this.set("controller.isSaved", false);
+    if (this.get('value') === "") {
+      this.set("rows", 1);
     }
   }.observes("value"),
 
@@ -190,11 +175,11 @@ App.DjpTextArea = Ember.TextArea.extend({
       this.set("rows", this.get("rows") + 1);
     } else if (key.which === 8) {
       var rows = this.get("rows");
-      if (rows >= 1) {
+      if (rows > 1) {
         this.set("rows", rows - 1);
       }
     }
-  }
+  }.observes("value")
 });
 
 App.NoteView = Ember.View.extend({

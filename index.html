@@ -9,74 +9,6 @@
   <link rel="stylesheet" href="./css/normalize.css" />
   <link rel="stylesheet" href="./css/foundation.css" />
   <link rel="stylesheet" href="./css/app.css" />
-  <style>
-    i {
-      position: absolute;
-      background-image: url(/images/add_comment.png);
-      background-repeat: no-repeat;
-      background-position: 50% 50%;
-      height: 26px;
-      width: 16px;
-      right: 20px;
-      cursor: pointer;
-      opacity: 0;
-    }
-    i a { text-decoration: none; }
-
-    .line {
-      line-height: 1.6em;
-      padding-right: 26px;
-    }
-    .line:hover, .line:active {
-      background-color: #ffffcc;
-    }
-    .line:hover i {
-      opacity: 1;
-    }
-
-    .comments {
-      padding: 10px 0 10px 10px;
-    }
-    .new-comment {
-      margin: 20px 0 0 0;
-    }
-    .comment {
-      border: 1px solid #c5c5c5;
-      margin: 5px 0 5px 0;
-    }
-    .comment .info {
-      line-height: 1em;
-      padding: 5px;
-      background-color: #e5e5e5;
-    }
-    .comment .info img {
-      width: 20px;
-      vertical-align: middle
-    }
-    .comment .info a {
-      font-size: .75em;
-      font-weight: bold;
-      color: #444;
-    }
-    .comment .info a:hover {
-      text-decoration: underline;
-    }
-    .comment .info ul {
-      float: right;
-      list-style-type: none;
-      margin: 0;
-      line-height: 1em;
-    }
-    .comment .info ul li {
-      display: inline;
-    }
-    .comment .body {
-      padding: 10px 5px;
-      font-size: .9em;
-      line-height: 1.1em;
-    }
-
-  </style>
   <script src="js/vendor/custom.modernizr.js"></script>
 </head>
 <body>
@@ -188,14 +120,6 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="_new_note">
-    <form class='new-comment'>
-      {{view Ember.TextArea valueBinding="newNote.body" placeholder="Share your thoughts on this line"}}
-      <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
-      <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
-    </form>
-  </script>
-
   <script type="text/x-handlebars" data-template-name="line">
     <div class='line'>
       <i {{action "toggleNewNote" view}}></i>
@@ -204,13 +128,16 @@
 
     {{#if showingNotes}}
       <div class='comments'>
-
         {{#each note in notes}}
           {{render "note" note}}
         {{/each}}
 
         {{#if newNote}}
-          {{partial "new_note"}}
+          <form class='new-comment'>
+            {{view App.DjpTextArea valueBinding="newNote.body" placeholder="Share your thoughts on this line"}}
+            <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
+            <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr disabled="disableNewNoteCreate"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
+          </form>
         {{else}}
           <button {{action "toggleNewNote"}} class="secondary small"> Add line note </button>
         {{/if}}
@@ -252,6 +179,14 @@
         {{render "version_comments.new"}}
       </div>
     </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="new_comment">
+    <form class='new-comment'>
+      {{view App.DjpTextArea valueBinding="newNote.body" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
+      <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
+      <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
+    </form>
   </script>
 
   <script type="text/x-handlebars" data-template-name="version_comments/new">
