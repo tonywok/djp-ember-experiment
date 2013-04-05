@@ -134,24 +134,30 @@ App.VersionCommentsNewController = Ember.ObjectController.extend({
   }
 });
 
+App.NewNoteView = Ember.View.extend({
+  isVisible: function() {
+    return this.get("controller.content") !== null;
+  }.observes("controller.content")
+});
+
 App.LineController = Ember.ObjectController.extend({
-  showingNewNote: false,
-  isSaved: true,
-  note: "",
+  newNote: null,
 
   showingNotes: function() {
-   return this.get("showingNewNote") || this.get("foos").length;
-  }.property("foos", "showingNewNote"),
+    return this.get("newNote") || this.get("notes").length;
+  }.property("notes", "newNote"),
 
   toggleNewNote: function() {
-    this.set("showingNewNote", !this.get("showingNewNote"));
+    if (this.get("newNote")) {
+      this.set("newNote", null);
+    } else {
+      this.set("newNote", Ember.Object.create({}));
+    }
   },
 
-  createNote: function(){
-    this.get("content.foos").pushObject(App.Comment.create({
-      body: this.get("note")
-    }));
-    this.set("note", "");
+  createNote: function() {
+    this.get("notes").addObject(this.get("newNote"));
+    this.set("newNote", null);
   }
 });
 
@@ -159,9 +165,15 @@ App.LineController = Ember.ObjectController.extend({
 //
 App.DjpTextArea = Ember.TextArea.extend({
   rows: 1,
+
   didInsertElement: function() {
     this.set("original_content", this.get("value"));
   },
+
+  reset: function() {
+    this.set("value", "");
+    this.set("rows", 1);
+  }.observes("controller.content"),
 
   change: function() {
     var isEmpty = this.get('value') === "";
@@ -229,15 +241,15 @@ App.Part = Ember.Object.extend({
           App.Line.create({ 
             id: "100",
             body: "Oh, if you want my eyes take my eyes, they're always true",
-            foos: [
+            notes: [
               App.Comment.create({id: "10", body: "test"}),
               App.Comment.create({id: "11", body: "test"})
             ]
           }),
-          App.Line.create({ id: "1", body: "Oh, If you want my heart take my heart, it's right here for you", foos: [] }),
-          App.Line.create({ id: "2", body: "Oh, it's been so long, but i made it through", foos: [] }),
-          App.Line.create({ id: "3", body: "Oh it's been so long, been so long, but i made it through", foos: [] }),
-          App.Line.create({ id: "4", body: "It's been so... long", foos: []})
+          App.Line.create({ id: "1", body: "Oh, If you want my heart take my heart, it's right here for you", notes: [] }),
+          App.Line.create({ id: "2", body: "Oh, it's been so long, but i made it through", notes: [] }),
+          App.Line.create({ id: "3", body: "Oh it's been so long, been so long, but i made it through", notes: [] }),
+          App.Line.create({ id: "4", body: "It's been so... long", notes: []})
         ],
         part: this
       })

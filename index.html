@@ -188,6 +188,14 @@
     </div>
   </script>
 
+  <script type="text/x-handlebars" data-template-name="_new_note">
+    <form class='new-comment'>
+      {{view Ember.TextArea valueBinding="newNote.body" placeholder="Share your thoughts on this line"}}
+      <button {{action "toggleNewNote"}} class="secondary small"> Cancel </button>
+      <input type='submit' value="Comment on this line" {{action "createNote"}} {{bindAttr class=":right :small :success :button isSaved:disabled"}} />
+    </form>
+  </script>
+
   <script type="text/x-handlebars" data-template-name="line">
     <div class='line'>
       <i {{action "toggleNewNote" view}}></i>
@@ -196,16 +204,13 @@
 
     {{#if showingNotes}}
       <div class='comments'>
-        {{#each note in line.foos}}
+
+        {{#each note in notes}}
           {{render "note" note}}
         {{/each}}
 
-        {{#if showingNewNote}}
-          <form class='new-comment'>
-            {{view App.DjpTextArea valueBinding="note" rowsBindings="rows" placeholder="Share your thoughts on this line"}}
-            <button {{action "toggleNewNote"}} class="secondary small"> Cancel</button>
-            <button {{action "createNote" view.note}}{{bindAttr class=":right :small :success isSaved:disabled"}}> Comment on this line </button>
-          </form>
+        {{#if newNote}}
+          {{partial "new_note"}}
         {{else}}
           <button {{action "toggleNewNote"}} class="secondary small"> Add line note </button>
         {{/if}}
